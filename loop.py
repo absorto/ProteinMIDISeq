@@ -7,7 +7,7 @@ output = mido.open_output( u'TiMidity port 0')
 #woodblock
 #output.send(mido.Message('program_change', program=115))
 
-output.send(mido.Message('program_change', program=45))
+output.send(mido.Message('program_change', program=80))
 
 
 loop = [
@@ -34,9 +34,11 @@ try:
         
         for i in range(0,len(loop[n])):
             if loop[n][i]:
-                output.send(mido.Message('note_on', note=notas[i], velocity=64))
+                if not loop[n-1][i]:
+                    output.send(mido.Message('note_on', note=notas[i], velocity=64))
             else:
-                output.send(mido.Message('note_off', note=notas[i], velocity=64))
+                if loop[n-1][i]:
+                    output.send(mido.Message('note_off', note=notas[i], velocity=64))
 
         print loop[n]
 
