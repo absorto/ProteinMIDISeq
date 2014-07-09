@@ -1,16 +1,17 @@
 import curses
 from time import sleep
 import mido
+from Bio.Seq import Seq
+from Bio.Alphabet import IUPAC
+
+coding_dna = Seq("ATGGCCATTGTAATGGGCCGCTGAAAGGGTGCCCGATAG", IUPAC.unambiguous_dna)
+print coding_dna.translate()
+
 
 class loop:
 
-    def __init__(self, stdscr, midi_output):
-        self.loop = [
-            [1, 0, 0, 0, 0, 0, 0, 0],
-            [0, 1, 0, 0, 0, 0, 0, 0],
-            [0, 0, 1, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 1],
-        ]
+    def __init__(self, stdscr, midi_output, loop):
+        self.loop = loop
         self.stdscr = stdscr
         self.output = midi_output
         self.output.send(mido.Message('program_change', program=80))
@@ -45,21 +46,30 @@ class loop:
 
 
 def main(stdscr):
-    # undisplay cursor
+    # initialize curses environment
     curses.curs_set(0)
     curses.init_pair(1, curses.COLOR_RED, curses.COLOR_WHITE)
-    # do not wait for input when calling getch
     stdscr.nodelay(1)
 
-    l = loop(stdscr, mido.open_output( u'TiMidity port 0'))
-    t = 0
+    a_loop = [
+        [1, 0, 0, 0, 0, 0, 0, 0],
+        [0, 1, 0, 0, 0, 0, 0, 0],
+        [0, 0, 1, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 1],
+    ]
+    # create a loop object
+    l = loop(stdscr, 
+             mido.open_output( u'TiMidity port 0'), 
+             a_loop)
 
+    # initialize main loop
     bpm = 111
     delay = 60.0 / bpm
-
+    t = 0
     while True:
         l.curses_render(t)        
         l.midi_messages(t)
+
         # as time goes by
         sleep(delay)
         t+=1
