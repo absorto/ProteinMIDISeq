@@ -5,7 +5,7 @@ from Bio.Seq import Seq
 from Bio.Alphabet import IUPAC
 
 coding_dna = Seq("ATGGCCATTGTAATGGGCCGCTGAAAGGGTGCCCGATAG", IUPAC.unambiguous_dna)
-print coding_dna.translate()
+print coding_dna.translate(to_stop=True)
 
 
 class loop:
@@ -43,6 +43,8 @@ class loop:
             else:
                 if self.loop[t-1][i]:
                     self.output.send(mido.Message('note_off', note=notas[i], velocity=64))
+
+
 
 
 def main(stdscr):
