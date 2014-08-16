@@ -1,3 +1,4 @@
+# coding: utf8
 import curses
 from time import sleep
 import mido
@@ -44,16 +45,20 @@ def loop_from_dna(sequence):
     return loop
 
 
-
+# un objeto loop seguramente tendrá dimensiones visuales y lógicas, y siempre va pegado a un sink midi
+# al llamarse tendrian que darle sus dimensiones, y el tendria que redimensionarse apropiadamente
+# al loop habría que darle: (width, height), (x,y), roll, midi_sink
 class loop:
 
-    t = 0
+    playhead_x = 0
+    tt         = 0
+    start      = True
 
     def __init__(self, midi_output, loop):
         self.loop = loop
 
         self.output = midi_output
-        self.output.send(mido.Message('program_change', program=19))
+        self.output.send(mido.Message('program_change', program=1))
 
         self.on = pyglet.image.load('resources/on.png') 
         self.on_sprite = pyglet.sprite.Sprite( self.on )
@@ -66,7 +71,7 @@ class loop:
 
     def render_playhead(self):
         pyglet.graphics.draw(2, pyglet.gl.GL_LINES,
-                             ('v2f', (self.t, 0, self.t, 1000)))
+                             ('v2f', (self.playhead_x, 0, self.playhead_x, 1000)))
 
 
     def render_pianoroll(self):
@@ -78,14 +83,14 @@ class loop:
                     self.off.blit(x*30, y*30)
 
 
-    def midi_messages(self, t, scale):
+    def midi_messages(self, scale):
 
-        for i in range(0,len(self.loop[t])):
-            if self.loop[t][i]:
-                if not self.loop[t-1][i]:
+        for i in range(0,len(self.loop[self.tt])):
+            if self.loop[self.tt][i]:
+                if not self.loop[self.tt-1][i]:
                     self.output.send(mido.Message('note_on', note=scale[i], velocity=64))
             else:
-                if self.loop[t-1][i]:
+                if self.loop[self.tt-1][i]:
                     self.output.send(mido.Message('note_off', note=scale[i]))
 
 
@@ -104,11 +109,13 @@ scale = [name2midi(n) for n in c_major_names]
 a_loop = [
     [1, 0, 0, 0, 0, 0, 0, 0],
     [0, 1, 0, 0, 0, 0, 0, 0],
-    [0, 0, 1, 0, 0, 1, 0, 0],
-    [0, 0, 0, 0, 1, 0, 0, 1],
+    [0, 0, 1, 0, 0, 0, 0, 0],
+    [0, 0, 0, 1, 0, 0, 0, 0],
+    [0, 0, 0, 0, 1, 0, 0, 0],
+    [0, 0, 0, 0, 0, 1, 0, 0],
 ]
 
-a_loop = loop_from_dna("ATGGCCATTGTAATGGGCCGCTGAAAGGGTGCCCGATAG")
+# a_loop = loop_from_dna("ATGGCCATTGTAATGGGCCGCTGAAAGGGTGCCCGATAG")
 
 # create a loop object
 l = loop( mido.open_output( u'TiMidity port 0'), 
@@ -116,17 +123,24 @@ l = loop( mido.open_output( u'TiMidity port 0'),
 
 
 
-def update(dt):
-
-    if l.t > l.width-1:
-        l.t = 0
+def update_playhead_display(dt):
+    if l.start:
+        l.playhead_x = 1
+        l.start = False
     else:
-        l.t += dt * 50
-
+        l.playhead_x += dt * 1.33 * 30
     l.render_pianoroll()
     l.render_playhead()
 
+def play_at_head(dt):
+    if l.tt == len(l.loop)-1:
+        l.tt = 0
+        l.start = True
+    else:
+        l.tt+=1
+    l.midi_messages(scale)
 
-pyglet.clock.schedule_interval(update, 1/60.0) # update at 60Hz
+pyglet.clock.schedule_interval(update_playhead_display, 1/60.0) # Update at 60Hz = 1/60
+pyglet.clock.schedule_interval(play_at_head, 60/80.0) # update at 60Hz
 pyglet.app.run()
 
