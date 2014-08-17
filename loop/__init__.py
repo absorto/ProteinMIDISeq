@@ -10,16 +10,20 @@ import pyglet
 # al loop habría que darle: (width, height), (x,y), roll, midi_sink
 class Loop:
 
-    playhead_x = 0
+
     tt         = 0
     start      = True
 
-    def __init__(self, loop, scale, width=800, height=600, midi_port=u'TiMidity port 0', midi_chan=1):
+    def __init__(self, loop, scale, bpm=120, x=0, y=0, width=800, height=600, midi_port=u'TiMidity port 0', midi_chan=1):
         self.loop       = loop
         self.beat_width = 30
         self.width      = width
         self.height     = height
         self.scale      = scale
+        self.x          = x 
+        self.playhead_x = x
+        self.y          = y
+        self.bpm        = 60/bpm
         self.beat_width = float(width)/len(self.loop)
         self.beat_height = float(height)/len(self.loop[0])
 
@@ -40,16 +44,16 @@ class Loop:
 
     def render_playhead(self):
         pyglet.graphics.draw(2, pyglet.gl.GL_LINES,
-                             ('v2f', (self.playhead_x, 0, self.playhead_x, self.height)))
+                             ('v2f', (self.playhead_x, self.y, self.playhead_x, self.y+self.height)))
 
 
     def render_pianoroll(self):
         for x in range(0,len(self.loop)):
             for y in range(0,len(self.loop[0])):
                 if self.loop[x][y]:
-                    self.on.blit(x*self.beat_width, y*self.beat_height)
+                    self.on.blit(self.x + (x*self.beat_width), self.y + (y*self.beat_height))
                 else:
-                    self.off.blit(x*self.beat_width, y*self.beat_height)
+                    self.off.blit(self.x + (x*self.beat_width), self.y + (y*self.beat_height))
 
 
     def midi_messages(self):
@@ -66,10 +70,10 @@ class Loop:
     def update_playhead_display(self, dt):
 
         if self.start:
-            self.playhead_x = 1
+            self.playhead_x = self.x + 1
             self.start = False
         else:
-            self.playhead_x += dt * 1.33 * self.beat_width
+            self.playhead_x += dt * 1/self.bpm * self.beat_width
 
         self.render_pianoroll()
         self.render_playhead()

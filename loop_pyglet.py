@@ -27,12 +27,14 @@ a_loop = [
 # create a loop object
 l = Loop( a_loop,
           scales.persian,
-          height=200, width=300 )
+          bpm = 60.0,
+          x = 500, y=600,
+          height=200, width=240)
 
 
 # main window
 window = pyglet.window.Window(height=800, width=1280)
 pyglet.clock.schedule_interval(l.update_playhead_display, 1/60.0) # Update at 60Hz = 1/60
-pyglet.clock.schedule_interval(l.play_at_head, 60/80.0) # update at 60Hz
+pyglet.clock.schedule_interval(l.play_at_head, l.bpm)
 pyglet.app.run()
 
