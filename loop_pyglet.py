@@ -1,9 +1,4 @@
 # coding: utf8
-import curses
-from time import sleep
-from Bio.Seq import Seq
-from Bio.Alphabet import IUPAC
-from Bio.Data import CodonTable
 
 import pyglet
 
@@ -11,25 +6,31 @@ import pyglet
 from loop import *
 import scales
 
-# a_loop = loop_from_dna("ATGGCCATTGTAATGGGCCGCTGAAAGGGTGCCCGATAG")
+
+a_loop = loop_from_dna("ATGGCCATTGTAATGGGCCGCTGAAAGGGTGCCCGATAG")
 
 a_loop = [
     [1, 0, 0, 0, 0, 0, 0, 0],
     [0, 1, 0, 0, 0, 0, 0, 0],
     [0, 0, 1, 0, 0, 0, 0, 0],
-    [0, 0, 0, 1, 0, 0, 0, 0],
-    [0, 0, 0, 0, 1, 0, 0, 0],
+    [0, 0, 1, 0, 0, 0, 0, 0],
+    [0, 0, 1, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 1, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 1, 0],
     [1, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0],
 ]
+
+
 
 # create a loop object
 l = Loop( a_loop,
           scales.persian,
-          bpm = 60.0,
-          x = 500, y=600,
-          height=200, width=240)
+          bpm = 120.0,
+          x = 500, y=400,
+          height=200, width=240, midi_chan=19)
 
 
 # main window

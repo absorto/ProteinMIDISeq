@@ -92,6 +92,10 @@ class Loop:
 
 
 
+from Bio.Seq import Seq
+from Bio.Alphabet import IUPAC
+from Bio.Data import CodonTable
+
 
 def loop_from_dna(sequence):
     loop = []
