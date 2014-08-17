@@ -43,8 +43,9 @@ class Loop:
 
 
     def render_playhead(self):
-        pyglet.graphics.draw(2, pyglet.gl.GL_LINES,
-                             ('v2f', (self.playhead_x, self.y, self.playhead_x, self.y+self.height)))
+        if self.playhead_x <= self.width + self.x:
+            pyglet.graphics.draw(2, pyglet.gl.GL_LINES,
+                                 ('v2f', (self.playhead_x, self.y, self.playhead_x, self.y+self.height)))
 
 
     def render_pianoroll(self):
