@@ -86,21 +86,6 @@ class Loop:
 
 
 
-class NoteConverter:
-    def __init__(self, base=5):
-        self.base = base
-        names = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
-        self.notes = {}
-        for note in range(128):
-            name = names[note % 12]
-            octave = int(note / 12) - base
-            key = '%s%i' % (name, octave)
-            self.notes[key] = note
-            if octave == 0:
-                self.notes[name] = note
-
-    def __call__(self, note):
-        return self.notes.get(str(note).upper(), note)
 
 
 def loop_from_dna(sequence):
