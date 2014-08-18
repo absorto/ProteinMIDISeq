@@ -30,7 +30,7 @@ l = Loop( a_loop,
           scales.persian,
           bpm = 120.0,
           x = 500, y=400,
-          height=200, width=240, midi_chan=19)
+          height=100, width=340, midi_chan=2)
 
 
 # main window

@@ -48,13 +48,26 @@ class Loop:
                                  ('v2f', (self.playhead_x, self.y, self.playhead_x, self.y+self.height)))
 
 
+    def render_beat(self, x, y, rgb=(0,0,255)):
+        pyglet.graphics.draw_indexed(4, pyglet.gl.GL_TRIANGLES,
+                                     [0, 1, 2, 0, 2, 3],
+                                     ('v2f', (x, y,
+                                              x + self.beat_width, y,
+                                              x + self.beat_width, y + self.beat_height,
+                                              x, y+self.beat_height)),
+                                     ('c3B', rgb * 4)
+                                 )
+
+
     def render_pianoroll(self):
+
         for x in range(0,len(self.loop)):
             for y in range(0,len(self.loop[0])):
                 if self.loop[x][y]:
-                    self.on.blit(self.x + (x*self.beat_width), self.y + (y*self.beat_height))
+                    self.render_beat(self.x + (x*self.beat_width), self.y + (y*self.beat_height), (33,66,99))
                 else:
-                    self.off.blit(self.x + (x*self.beat_width), self.y + (y*self.beat_height))
+                    self.render_beat(self.x + (x*self.beat_width), self.y + (y*self.beat_height), (0,0,0))
+
 
 
     def midi_messages(self):
