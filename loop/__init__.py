@@ -16,7 +16,6 @@ class Loop:
 
     def __init__(self, loop, scale, bpm=120, x=0, y=0, width=800, height=600, midi_port=u'TiMidity port 0', midi_chan=1):
         self.loop       = loop
-        self.beat_width = 30
         self.width      = width
         self.height     = height
         self.scale      = scale
@@ -27,19 +26,9 @@ class Loop:
         self.beat_width = float(width)/len(self.loop)
         self.beat_height = float(height)/len(self.loop[0])
 
-        print self.beat_width, self.beat_height
-
         # initialize midi output
         self.midi_output = mido.open_output( midi_port )
         self.midi_output.send(mido.Message('program_change', program=midi_chan))
-
-        # load sprites
-        self.on = pyglet.image.load('resources/on.png') 
-        self.on_sprite = pyglet.sprite.Sprite( self.on )
-
-        self.off = pyglet.image.load('resources/off.png') 
-        self.off_sprite = pyglet.sprite.Sprite( self.off )
-
 
 
     def render_playhead(self):
