@@ -66,7 +66,7 @@ class Loop:
                 if self.loop[x][y]:
                     self.render_beat(self.x + (x*self.beat_width), self.y + (y*self.beat_height), (33,66,99))
                 else:
-                    self.render_beat(self.x + (x*self.beat_width), self.y + (y*self.beat_height), (0,0,0))
+                    self.render_beat(self.x + (x*self.beat_width), self.y + (y*self.beat_height), (99,0,0))
 
 
 
@@ -87,7 +87,7 @@ class Loop:
             self.playhead_x = self.x + 1
             self.start = False
         else:
-            self.playhead_x += dt * 1/self.bpm * self.beat_width
+            self.playhead_x += dt * (self.beat_width/self.bpm)
 
         self.render_pianoroll()
         self.render_playhead()
