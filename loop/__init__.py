@@ -11,13 +11,6 @@ import pyglet
 class Loop:
 
 
-    tt         = 0
-    start      = True
-    vertex_index = []
-    vertex_coords = []
-    vertex_colors = []
-    quads = 0
-
     def __init__(self, loop, scale, bpm=120, x=0, y=0, width=800, height=600, midi_port=u'TiMidity port 0', midi_chan=1, foreground=(0,0,255), background=(255,0,0)):
         self.loop       = loop
         self.width      = width
@@ -31,10 +24,14 @@ class Loop:
         self.bpm        = 60/bpm
         self.beat_width = float(width)/len(self.loop)
         self.beat_height = float(height)/len(self.loop[0])
+        self.tt         = 0
+        self.start      = True
+        self.vertex_index = []
+        self.vertex_coords = []
+        self.vertex_colors = []
+        self.quads = 0
 
         self.vertexes_from_loop()
-        # pprint.pprint( self.vertex_coords)
-        # pprint.pprint(self.vertex_index)
 
         # initialize midi output
         self.midi_output = mido.open_output( midi_port )
