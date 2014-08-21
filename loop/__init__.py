@@ -1,5 +1,5 @@
 # coding: utf8
-
+import pprint
 
 import mido
 import pyglet
@@ -13,8 +13,12 @@ class Loop:
 
     tt         = 0
     start      = True
+    vertex_index = []
+    vertex_coords = []
+    vertex_colors = []
+    quads = 0
 
-    def __init__(self, loop, scale, bpm=120, x=0, y=0, width=800, height=600, midi_port=u'TiMidity port 0', midi_chan=1):
+    def __init__(self, loop, scale, bpm=120, x=0, y=0, width=800, height=600, midi_port=u'TiMidity port 0', midi_chan=1, foreground=(0,0,255), background=(255,0,0)):
         self.loop       = loop
         self.width      = width
         self.height     = height
@@ -22,9 +26,15 @@ class Loop:
         self.x          = x 
         self.playhead_x = x
         self.y          = y
+        self.foreground = foreground
+        self.background = background
         self.bpm        = 60/bpm
         self.beat_width = float(width)/len(self.loop)
         self.beat_height = float(height)/len(self.loop[0])
+
+        self.vertexes_from_loop()
+        # pprint.pprint( self.vertex_coords)
+        # pprint.pprint(self.vertex_index)
 
         # initialize midi output
         self.midi_output = mido.open_output( midi_port )
@@ -37,25 +47,37 @@ class Loop:
                                  ('v2f', (self.playhead_x, self.y, self.playhead_x, self.y+self.height)))
 
 
-    def render_beat(self, x, y, rgb=(0,0,255)):
-        pyglet.graphics.draw_indexed(4, pyglet.gl.GL_TRIANGLES,
-                                     [0, 1, 2, 0, 2, 3],
-                                     ('v2f', (x, y,
-                                              x + self.beat_width, y,
-                                              x + self.beat_width, y + self.beat_height,
-                                              x, y+self.beat_height)),
-                                     ('c3B', rgb * 4)
-                                 )
+    def render_beat(self, x, y):
+        return (x, y,
+                x + self.beat_width, y,
+                x + self.beat_width, y + self.beat_height,
+                x, y+self.beat_height)
+
+
+    def vertexes_from_loop(self):
+        for x in range(0,len(self.loop)):
+            for y in range(0,len(self.loop[0])):
+                self.vertex_coords += self.render_beat(self.x + (x*self.beat_width),
+                                                         self.y + (y*self.beat_height))
+
+                self.vertex_index += [self.quads, self.quads+1, self.quads+2,
+                                      self.quads, self.quads+2, self.quads+3]
+                self.quads+=4
+
+                if self.loop[x][y]:
+                    self.vertex_colors += self.foreground * 4
+                else:
+                    self.vertex_colors += self.background * 4
+
+        
 
 
     def render_pianoroll(self):
+        pyglet.graphics.draw_indexed(self.quads, pyglet.gl.GL_TRIANGLES,
+                                     self.vertex_index,
+                                     ('v2f', self.vertex_coords),
+                                     ('c3B', self.vertex_colors) )
 
-        for x in range(0,len(self.loop)):
-            for y in range(0,len(self.loop[0])):
-                if self.loop[x][y]:
-                    self.render_beat(self.x + (x*self.beat_width), self.y + (y*self.beat_height), (33,66,99))
-                else:
-                    self.render_beat(self.x + (x*self.beat_width), self.y + (y*self.beat_height), (99,0,0))
 
 
 
