@@ -1,27 +1,24 @@
 # coding: utf8
 import pprint
 
+from Bio.Seq import Seq
+from Bio.Alphabet import IUPAC
+from Bio.Data import CodonTable
 import mido
 import pyglet
 
+# the pianoroll
+class PianoRoll:
 
-# un objeto loop seguramente tendrá dimensiones visuales y lógicas, y siempre va pegado a un sink midi
-# al llamarse tendrian que darle sus dimensiones, y el tendria que redimensionarse apropiadamente
-# al loop habría que darle: (width, height), (x,y), roll, midi_sink
-class Loop:
-
-
-    def __init__(self, loop, scale, bpm=120, x=0, y=0, width=800, height=600, midi_port=u'TiMidity port 0', midi_chan=1, foreground=(0,0,255), background=(255,0,0)):
+    def __init__(self, loop, x=0, y=0, width=800, height=600, foreground=(0,0,255), background=(255,0,0)):
         self.loop       = loop
         self.width      = width
         self.height     = height
-        self.scale      = scale
         self.x          = x 
         self.playhead_x = x
         self.y          = y
         self.foreground = foreground
         self.background = background
-        self.bpm        = 60/bpm
         self.beat_width = float(width)/len(self.loop)
         self.beat_height = float(height)/len(self.loop[0])
         self.tt         = 0
@@ -30,12 +27,7 @@ class Loop:
         self.vertex_coords = []
         self.vertex_colors = []
         self.quads = 0
-
         self.vertexes_from_loop()
-
-        # initialize midi output
-        self.midi_output = mido.open_output( midi_port )
-        self.midi_output.send(mido.Message('program_change', program=midi_chan))
 
 
     def render_playhead(self):
@@ -76,19 +68,6 @@ class Loop:
                                      ('c3B', self.vertex_colors) )
 
 
-
-
-    def midi_messages(self):
-
-        for i in range(0,len(self.loop[self.tt])):
-            if self.loop[self.tt][i]:
-                if not self.loop[self.tt-1][i]:
-                    self.midi_output.send(mido.Message('note_on', note=self.scale[i], velocity=64))
-            else:
-                if self.loop[self.tt-1][i]:
-                    self.midi_output.send(mido.Message('note_off', note=self.scale[i]))
-
-
     def update_playhead_display(self, dt):
 
         if self.start:
@@ -100,25 +79,12 @@ class Loop:
         self.render_pianoroll()
         self.render_playhead()
 
-    def play_at_head(self, dt):
-        if self.tt == len(self.loop)-1:
-            self.tt = 0
-            self.start = True
-        else:
-            self.tt+=1
-        self.midi_messages()
 
 
 
 
 
-
-from Bio.Seq import Seq
-from Bio.Alphabet import IUPAC
-from Bio.Data import CodonTable
-
-
-def loop_from_dna(sequence):
+def dna2loop(sequence):
     loop = []
     # amino list from sequence
 #    amino_list = list(  Seq(sequence, IUPAC.unambiguous_dna).translate(to_stop=True).tostring() )
@@ -133,3 +99,63 @@ def loop_from_dna(sequence):
 
         loop.append(column)
     return loop
+
+
+
+
+# see the dna seq as it is played
+class ContigLoop():
+
+        def __init__(self, sequence, 
+                     x=0, y=0,
+                     width=800, height=600,
+                     fg=(0,0,255), bg=(255,0,0)):
+            self.sequence = sequence
+            self.width    = width
+            self.height   = height
+            self.x        = x 
+            self.y        = y
+            self.fg       = fg
+            self.bg       = bg
+            self.play    = True
+
+    def update(self, dt):
+
+        if self.play:
+            pass
+        else:
+            self.playhead_x += dt * (self.beat_width/self.bpm)
+
+
+
+# send midi events from loop
+class MidiLoop:
+
+    def __init__(self, loop, scale, bpm=120, midi_port=u'TiMidity port 0', midi_chan=1):
+        self.loop       = loop
+        self.scale      = scale
+        self.bpm        = 60/bpm
+        self.start      = True
+
+        # initialize midi output
+        self.midi_output = mido.open_output( midi_port )
+        self.midi_output.send(mido.Message('program_change', program=midi_chan))
+
+
+    def play_at_head(self, dt):
+        if self.tt == len(self.loop)-1:
+            self.tt = 0
+            self.start = True
+        else:
+            self.tt+=1
+        self.midi_messages()
+
+
+    def midi_messages(self):
+        for i in range(0,len(self.loop[self.tt])):
+            if self.loop[self.tt][i]:
+                if not self.loop[self.tt-1][i]:
+                    self.midi_output.send(mido.Message('note_on', note=self.scale[i], velocity=64))
+            else:
+                if self.loop[self.tt-1][i]:
+                    self.midi_output.send(mido.Message('note_off', note=self.scale[i]))
