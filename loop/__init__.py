@@ -106,25 +106,38 @@ def dna2loop(sequence):
 # see the dna seq as it is played
 class ContigLoop():
 
-        def __init__(self, sequence, 
-                     x=0, y=0,
-                     width=800, height=600,
-                     fg=(0,0,255), bg=(255,0,0)):
-            self.sequence = sequence
-            self.width    = width
-            self.height   = height
-            self.x        = x 
-            self.y        = y
-            self.fg       = fg
-            self.bg       = bg
-            self.play    = True
+    def __init__(self, sequence, 
+                 x=0, y=0,
+                 width=800, height=600,
+                 fg=(0,0,255), bg=(255,0,0)):
+        self.sequence = sequence
+        self.width    = width
+        self.height   = height
+        self.x        = x 
+        self.y        = y
+        self.fg       = fg
+        self.bg       = bg
+        self.play    = True
+        self.label    = None
+        self.head = 0
+        self.sprite = pyglet.sprite.Sprite( pyglet.image.load('off.png') )
 
     def update(self, dt):
+        codon = self.sequence[self.head:self.head+3]
+        self.sprite.x = 200
+        self.sprite.y = 180
+        self.sprite.draw()
+        self.label = pyglet.text.HTMLLabel(
+            "<font face='mono' size='40' color='red'>%s</font>" % codon,
+            x=200, y=200,
+            anchor_x='left', anchor_y='center')
+        self.label.draw()
 
-        if self.play:
-            pass
+        if self.head>=len(self.sequence)+3:
+            self.head = 0
         else:
-            self.playhead_x += dt * (self.beat_width/self.bpm)
+            self.head += 3
+
 
 
 

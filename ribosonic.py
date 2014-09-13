@@ -12,7 +12,6 @@ cl = ContigLoop( abo,
                 x = 0, y=400,
                 height=300, width=1140 )
 
-
-window = pyglet.window.Window(height=800, width=1280)
-pyglet.clock.schedule_interval(cl.update, 1/30.0) # Update at 60Hz = 1/60
+window = pyglet.window.Window(fullscreen=True)
+pyglet.clock.schedule_interval(cl.update, 60/120.0) # Update at 120 bpm
 pyglet.app.run()
