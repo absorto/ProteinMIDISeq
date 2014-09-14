@@ -7,6 +7,8 @@ from Bio.Data import CodonTable
 import mido
 import pyglet
 
+import random
+
 # the pianoroll
 class PianoRoll:
 
@@ -120,16 +122,27 @@ class ContigLoop():
         self.play    = True
         self.label    = None
         self.head = 0
-        self.sprite = pyglet.sprite.Sprite( pyglet.image.load('off.png') )
+
 
     def update(self, dt):
-        codon = self.sequence[self.head:self.head+3]
-        self.sprite.x = 200
-        self.sprite.y = 180
-        self.sprite.draw()
-        self.label = pyglet.text.HTMLLabel(
-            "<font face='mono' size='40' color='red'>%s</font>" % codon,
+        codon = self.sequence[self.head-3:self.head]
+        self.label = pyglet.text.Label(
+            codon,
             x=200, y=200,
+            font_size=190,
+            font_name='Free Mono',
+            color=(0,0,0,255),
+            anchor_x='left', anchor_y='center')
+        self.label.draw()
+
+        codon = self.sequence[self.head:self.head+3]
+
+        self.label = pyglet.text.Label(
+            codon,
+            x=200, y=200,
+            font_size=190,
+            font_name='Free Mono',
+            color=(random.randint(50,255),random.randint(27,255),random.randint(7,255),255),
             anchor_x='left', anchor_y='center')
         self.label.draw()
 
