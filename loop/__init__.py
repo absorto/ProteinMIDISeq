@@ -3,7 +3,7 @@
 
 import mido
 import pyglet
-
+import svgwrite
 
 # un objeto loop seguramente tendrá dimensiones visuales y lógicas, y siempre va pegado a un sink midi
 # al llamarse tendrian que darle sus dimensiones, y el tendria que redimensionarse apropiadamente
@@ -33,6 +33,9 @@ class Loop:
         self.midi_output = mido.open_output( midi_port )
         self.midi_output.send(mido.Message('program_change', program=midi_chan))
 
+        # render SVG
+        self.dwg = svgwrite.Drawing(filename='roll.svg', debug=True)
+        
         # load sprites
         self.on = pyglet.image.load('resources/on.png') 
         self.on_sprite = pyglet.sprite.Sprite( self.on )
@@ -42,6 +45,8 @@ class Loop:
 
 
 
+    
+        
     def render_playhead(self):
         if self.playhead_x <= self.width + self.x:
             pyglet.graphics.draw(2, pyglet.gl.GL_LINES,
@@ -56,6 +61,21 @@ class Loop:
                 else:
                     self.off.blit(self.x + (x*self.beat_width), self.y + (y*self.beat_height))
 
+
+
+    def render_pianoroll_svg(self):
+        for x in range(0,len(self.loop)):
+            for y in range(0,len(self.loop[0])):
+                if self.loop[x][y]:
+                    self.dwg.add(self.dwg.rect(insert=(self.x + (x*self.beat_width), self.y + (y*self.beat_height)),
+                                               size=(45, 45),
+                                               fill='blue', stroke='red', stroke_width=3))
+                else:
+                    self.dwg.add(self.dwg.rect(insert=(self.x + (x*self.beat_width), self.y + (y*self.beat_height)),
+                                               size=(45, 45),
+                                               fill='red', stroke='blue', stroke_width=3))
+        self.dwg.save()
+        
 
     def midi_messages(self):
 

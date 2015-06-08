@@ -4,6 +4,7 @@ import pyglet
 
 
 from loop import *
+
 import scales
 
 
@@ -30,8 +31,9 @@ l = Loop( a_loop,
           scales.persian,
           bpm = 120.0,
           x = 500, y=400,
-          height=200, width=240, midi_chan=19)
+          height=200, width=240, midi_chan=19, midi_port=u'ZynAddSubFX')
 
+l.render_pianoroll_svg()
 
 # main window
 window = pyglet.window.Window(height=800, width=1280)
