@@ -6,14 +6,16 @@ from Bio.Alphabet import IUPAC
 from Bio.Data import CodonTable
 import mido
 import pyglet
-
 import random
+import svgwrite
+
 
 # the pianoroll
 class PianoRoll:
 
-    def __init__(self, loop, x=0, y=0, width=800, height=600, foreground=(0,0,255), background=(255,0,0)):
+    def __init__(self, loop, scale, x, y, width=800, height=600, foreground=(0,0,255), background=(255,0,0), midi_port='', midi_chan=0, bpm=120):
         self.loop       = loop
+        self.scale      = scale        
         self.width      = width
         self.height     = height
         self.x          = x 
@@ -30,8 +32,29 @@ class PianoRoll:
         self.vertex_colors = []
         self.quads = 0
         self.vertexes_from_loop()
+        self.bpm        = 60/bpm
+        
+        print self.beat_width, self.beat_height
+
+        # initialize midi output
+        self.midi_output = mido.open_output( midi_port )
+        self.midi_output.send(mido.Message('program_change', program=midi_chan))
+
+        # render SVG
+        self.dwg = svgwrite.Drawing(filename='roll.svg', debug=True)
+        
+        # load sprites
+        self.on = pyglet.image.load('resources/on.png') 
+        self.on_sprite = pyglet.sprite.Sprite( self.on )
+
+        self.off = pyglet.image.load('resources/off.png') 
+        self.off_sprite = pyglet.sprite.Sprite( self.off )
 
 
+
+
+    
+        
     def render_playhead(self):
         if self.playhead_x <= self.width + self.x:
             pyglet.graphics.draw(2, pyglet.gl.GL_LINES,
@@ -62,7 +85,41 @@ class PianoRoll:
 
         
 
+    def render_pianoroll_svg(self):
+        for x in range(0,len(self.loop)):
+            for y in range(0,len(self.loop[0])):
+                if self.loop[x][y]:
+                    self.dwg.add(self.dwg.rect(insert=(self.x + (x*self.beat_width), self.y + (y*self.beat_height)),
+                                               size=(45, 45),
+                                               fill='blue', stroke='red', stroke_width=3))
+                else:
+                    self.dwg.add(self.dwg.rect(insert=(self.x + (x*self.beat_width), self.y + (y*self.beat_height)),
+                                               size=(45, 45),
+                                               fill='red', stroke='blue', stroke_width=3))
+        self.dwg.save()
+        
 
+
+    def play_at_head(self, dt):
+        if self.tt == len(self.loop)-1:
+            self.tt = 0
+            self.start = True
+        else:
+            self.tt+=1
+        self.midi_messages()
+
+
+    def midi_messages(self):
+        for i in range(0,len(self.loop[self.tt])):
+            if self.loop[self.tt][i]:
+                if not self.loop[self.tt-1][i]:
+                    self.midi_output.send(mido.Message('note_on', note=self.scale[i], velocity=64))
+            else:
+                if self.loop[self.tt-1][i]:
+                    self.midi_output.send(mido.Message('note_off', note=self.scale[i]))
+
+
+    
     def render_pianoroll(self):
         pyglet.graphics.draw_indexed(self.quads, pyglet.gl.GL_TRIANGLES,
                                      self.vertex_index,
