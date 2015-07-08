@@ -67,7 +67,10 @@ class Loop:
                     self.vertex_colors += self.background * 4
 
         
-
+    def blit_pianoroll(self):
+        # here do the img
+        pass
+    
 
     def render_pianoroll(self):
         pyglet.graphics.draw_indexed(self.quads, pyglet.gl.GL_TRIANGLES,
