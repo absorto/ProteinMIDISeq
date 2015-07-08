@@ -1,7 +1,10 @@
 # coding: utf8
 import pprint
 
+from uuid import uuid4 as random_uuid
 import svgwrite
+from sh import convert
+
 import mido
 import pyglet
 
@@ -38,14 +41,16 @@ class Loop:
         self.midi_output = mido.open_output( midi_port )
         self.midi_output.send(mido.Message('program_change', program=midi_chan))
 
-        #write svg on init, convert it to png, read it
         # render SVG
-        self.dwg = svgwrite.Drawing(filename='roll.svg', debug=True)
+        loop_hash = random_uuid()
+        self.dwg = svgwrite.Drawing(filename="%s.svg" % loop_hash, size=(width, height), debug=True)
         self.render_pianoroll_svg()
 
+        convert("%s.svg" % loop_hash, "%s.png" % loop_hash)
+        
         # load png
-        self.sprite = pyglet.sprite.Sprite( pyglet.image.load('roll.png',
-                                                              file=open('roll.png')))
+        self.sprite = pyglet.sprite.Sprite( pyglet.image.load("%s.png" % loop_hash,
+                                                              file=open("%s.png" % loop_hash)))
         self.sprite.x = self.x
         self.sprite.y = self.y
         
@@ -87,8 +92,8 @@ class Loop:
         for x in range(0,len(self.loop)):
             for y in range(0,len(self.loop[0])):
                 if self.loop[x][y]:
-                    self.dwg.add(self.dwg.rect(insert=(self.x + (x*self.beat_width),
-                                                       self.y + (y*self.beat_height)),
+                    self.dwg.add(self.dwg.rect(insert=(x*self.beat_width,
+                                                       y*self.beat_height),
                                                size=(self.beat_width,
                                                      self.beat_height),
                                                fill='midnightblue', stroke_width=0))
