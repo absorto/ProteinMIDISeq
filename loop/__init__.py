@@ -1,6 +1,7 @@
 # coding: utf8
 import pprint
 
+import svgwrite
 import mido
 import pyglet
 
@@ -38,8 +39,16 @@ class Loop:
         self.midi_output.send(mido.Message('program_change', program=midi_chan))
 
         #write svg on init, convert it to png, read it
-        
+        # render SVG
+        self.dwg = svgwrite.Drawing(filename='roll.svg', debug=True)
+        self.render_pianoroll_svg()
 
+        # load png
+        self.sprite = pyglet.sprite.Sprite( pyglet.image.load('roll.png',
+                                                              file=open('roll.png')))
+        self.sprite.x = self.x
+        self.sprite.y = self.y
+        
     def render_playhead(self):
         if self.playhead_x <= self.width + self.x:
             pyglet.graphics.draw(2, pyglet.gl.GL_LINES,
@@ -69,9 +78,21 @@ class Loop:
                     self.vertex_colors += self.background * 4
 
         
-    def blit_pianoroll(self):
-        # here do the img, write svg on init, convert it to png, read it
-        pass
+    def render_pianoroll_sprite(self):
+        # here do the img, write svg on init, convert it to png, read
+        # it
+        self.sprite.draw()
+
+    def render_pianoroll_svg(self):
+        for x in range(0,len(self.loop)):
+            for y in range(0,len(self.loop[0])):
+                if self.loop[x][y]:
+                    self.dwg.add(self.dwg.rect(insert=(self.x + (x*self.beat_width),
+                                                       self.y + (y*self.beat_height)),
+                                               size=(self.beat_width,
+                                                     self.beat_height),
+                                               fill='midnightblue', stroke_width=0))
+        self.dwg.save()
     
 
     def render_pianoroll(self):
@@ -102,7 +123,8 @@ class Loop:
         else:
             self.playhead_x += dt * (self.beat_width/self.bpm)
 
-        self.render_pianoroll()
+        #self.render_pianoroll()
+        self.render_pianoroll_sprite()
         self.render_playhead()
 
     def play_at_head(self, dt):
