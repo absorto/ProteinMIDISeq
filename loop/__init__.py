@@ -37,6 +37,8 @@ class Loop:
         self.midi_output = mido.open_output( midi_port )
         self.midi_output.send(mido.Message('program_change', program=midi_chan))
 
+        #write svg on init, convert it to png, read it
+        
 
     def render_playhead(self):
         if self.playhead_x <= self.width + self.x:
@@ -68,7 +70,7 @@ class Loop:
 
         
     def blit_pianoroll(self):
-        # here do the img
+        # here do the img, write svg on init, convert it to png, read it
         pass
     
 
