@@ -46,7 +46,9 @@ class Loop:
         self.dwg = svgwrite.Drawing(filename="%s.svg" % loop_hash, size=(width, height), debug=True)
         self.render_pianoroll_svg()
 
-        convert("%s.svg" % loop_hash, "%s.png" % loop_hash)
+        # svg to png
+        convert("%s.svg" % loop_hash,
+                "%s.png" % loop_hash)
         
         # load png
         self.sprite = pyglet.sprite.Sprite( pyglet.image.load("%s.png" % loop_hash,
@@ -93,7 +95,7 @@ class Loop:
             for y in range(0,len(self.loop[0])):
                 if self.loop[x][y]:
                     self.dwg.add(self.dwg.rect(insert=(x*self.beat_width,
-                                                       y*self.beat_height),
+                                                       (self.y - ((y*self.beat_height) + self.beat_height))+self.height),
                                                size=(self.beat_width,
                                                      self.beat_height),
                                                fill='midnightblue', stroke_width=0))
