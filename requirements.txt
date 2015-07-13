@@ -1,0 +1,8 @@
+biopython==1.65
+ipython==3.1.0
+mido==1.1.13
+mingus==0.5.1
+pyglet==1.2.2
+pyparsing==2.0.3
+sh==1.11
+svgwrite==1.1.6
