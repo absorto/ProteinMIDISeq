@@ -3,8 +3,7 @@ import mido
 from loop import Loop, loop_from_dna
 from Bio import SeqIO
 from Bio.Data import CodonTable
-#import mingus.core.scales as scales
-#from mingus.containers import Note
+
 from pprint import pprint
 from time import sleep
 
@@ -71,14 +70,30 @@ ttk.Button(mainframe, text="load DNA sequence", command=read_seq).grid(column=1,
 ttk.Label(mainframe, text="", textvariable=seq).grid(column=2, row=2, sticky=W)
 
 # scale
+C_major = [36,38,40,41,43,45,47,
+           48,50,52,53,55,57,59,
+           60,62,64,65,67,69,71]
 standard_table = CodonTable.unambiguous_dna_by_name["Standard"]
-row = 3
-for amino in list(standard_table.back_table.keys()):
+aminoacids = []
+for a in list(standard_table.back_table.keys()):
+    if a:
+        aminoacids.append(a)
+aminoacids.sort()
+ttk.Label(mainframe, text='amino').grid(column=1, row=3, sticky=E)
+ttk.Label(mainframe, text='mini note').grid(column=2, row=3, sticky=W)
+row = 4
+wscale = []
+for amino in aminoacids:
     ttk.Label(mainframe, text=amino).grid(column=1, row=row, sticky=E)
+    wscale.append(StringVar())
+    tmp = ttk.Entry(mainframe, width=4, textvariable=wscale[len(wscale)-1])
+    tmp.grid(column=2, row=row, sticky=W)
+    tmp.insert(0,string=C_major.pop(0))
     row+=1
 
+
 # play!
-ttk.Button(mainframe, text="Play", command=play_callback).grid(column=2, row=4,  sticky=E)
+ttk.Button(mainframe, text="Play", command=play_callback).grid(column=3, row=2,  sticky=E)
 
 
 for child in mainframe.winfo_children(): child.grid_configure(padx=5, pady=5)
