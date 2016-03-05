@@ -17,13 +17,13 @@ def read_seq(*args):
     fname = askopenfilename()
     seq.set(fname)
 
-def play(midi_output, path):
+def play(midi_output, path, scale):
 
     loop = loop_from_dna(SeqIO.read(path,'fasta').seq.tostring())
 
     pprint(loop)
     a_loop = Loop( loop,
-                   A,
+                   scale,
                    midi_output=midi_output)
 
     bpm = 120
@@ -41,8 +41,11 @@ def play_callback(*args):
     midi_output = mido.open_output( port.get() )
     #midi_output.send(mido.Message('program_change', program=1))
 
+    scale = [int(g.get()) for g in wscale]
+    
     play(midi_output,
-         seq.get())
+         seq.get(),
+         scale)
 
     midi_output.close()
 
