@@ -48,10 +48,11 @@ def loop_from_dna(sequence):
     amino_list = Seq(sequence, IUPAC.unambiguous_dna).translate()
     standard_table = CodonTable.unambiguous_dna_by_name["Standard"]
     aminos = list(standard_table.back_table.keys())
+    aminos.remove(None)
     aminos.sort()
     for amino in amino_list:
         column = [0 for n in range(0,21)]
-        if not amino == None: # stop codons are None
+        if amino != "*":
             column[aminos.index(amino)] = amino
 
         loop.append(column)
