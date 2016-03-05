@@ -39,7 +39,7 @@ def play_callback(*args):
 
     # initialize midi output
     midi_output = mido.open_output( port.get() )
-    #midi_output.send(mido.Message('program_change', program=1))
+    midi_output.send(mido.Message('program_change', program=int(channel.get())))
 
     scale = [int(g.get()) for g in wscale]
     
@@ -48,6 +48,8 @@ def play_callback(*args):
          scale)
 
     midi_output.close()
+
+
 
     
 root = Tk()
@@ -61,16 +63,22 @@ mainframe.rowconfigure(0, weight=1)
 port = StringVar()
 meters = StringVar()
 seq = StringVar()
+channel = StringVar()
 
 # MIDI PORT
 ttk.Label(mainframe, text="MIDI port").grid(column=1, row=1, sticky=E)
 mido_out = ttk.Combobox(mainframe, width=30, textvariable=port, values=mido.get_output_names(), state='readonly')
 mido_out.set(mido.get_output_names()[0])
 mido_out.grid(column=2, row=1, sticky=(W, E))
+# MIDI Channel
+ttk.Label(mainframe, text="channel").grid(column=1, row=2, sticky=E)
+ttk.Combobox(mainframe, width=4, textvariable=channel, values=[j for j in range(128)]).grid(column=2, row=2, sticky=W)
+channel.set(0)
+#ttk.Entry(mainframe, width=4, textvariable=channel)
 
 # Sequence
-ttk.Button(mainframe, text="load DNA sequence", command=read_seq).grid(column=1, row=2,  sticky=E)
-ttk.Label(mainframe, text="", textvariable=seq).grid(column=2, row=2, sticky=W)
+ttk.Button(mainframe, text="load DNA sequence", command=read_seq).grid(column=1, row=3,  sticky=E)
+ttk.Label(mainframe, text="", textvariable=seq).grid(column=2, row=3, sticky=W)
 
 # scale
 C_major = [36,38,40,41,43,45,47,
@@ -82,9 +90,9 @@ for a in list(standard_table.back_table.keys()):
     if a:
         aminoacids.append(a)
 aminoacids.sort()
-ttk.Label(mainframe, text='amino').grid(column=1, row=3, sticky=E)
-ttk.Label(mainframe, text='mini note').grid(column=2, row=3, sticky=W)
-row = 4
+ttk.Label(mainframe, text='amino').grid(column=1, row=4, sticky=E)
+ttk.Label(mainframe, text='mini note').grid(column=2, row=4, sticky=W)
+row = 5
 wscale = []
 for amino in aminoacids:
     ttk.Label(mainframe, text=amino).grid(column=1, row=row, sticky=E)
