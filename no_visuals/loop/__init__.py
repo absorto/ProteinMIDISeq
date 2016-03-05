@@ -1,5 +1,5 @@
 # coding: utf8
-
+from pprint import pprint
 import mido
 from Bio.Seq import Seq
 from Bio.Alphabet import IUPAC
@@ -52,7 +52,7 @@ def loop_from_dna(sequence):
     for amino in amino_list:
         column = [0 for n in range(0,21)]
         if amino != '*':
-            column[standard_table.back_table.keys().index(amino)] = amino
+            column[list(standard_table.back_table.keys()).index(amino)] = amino
 
         loop.append(column)
     return loop
