@@ -1,6 +1,6 @@
 
 |rasgo                         |gen                           |posibles funciones                      |
---------------------------------------------------------------------------------------------------------
+|------------------------------|------------------------------|----------------------------------------|
 |oido absoluto                 |ADCY8                         |aprendizaje y memoria                   |
 |                              |EPHA7                         |desarrollo neuronal                     |
 |percepcion de tono y ritmo    |UNC5C                         |desarrollo neuronal                     |
