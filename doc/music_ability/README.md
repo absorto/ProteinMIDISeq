@@ -1,3 +1,5 @@
+Tomamos la siguiente tabla de
+[este artículo](the_genetic_basis_of_music_ability_yi_ting_tan_2014.pdf).
 
 |rasgo                         |gen                           |posibles funciones                      |
 |------------------------------|------------------------------|----------------------------------------|
@@ -13,3 +15,5 @@
 |creatividad musical           |ZDHHC1                        |                                        |
 |                              |GALM                          |thalamo, percepción musical             |
 
+Son genes relacionados con musicalidad. En este directorio hay
+archivos fasta con las secuencias codificantes. 
