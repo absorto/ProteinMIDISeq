@@ -11,38 +11,6 @@ from mingus.midi.midi_file_out import write_Track
 
 
 import argparse
-from pprint import pprint
-
-
-# class Loop:
-#     def __init__(self, loop, scale):
-#         self.loop       = loop
-#         self.scale      = scale
-
-#     def midi_messages(self):
-
-#         for i in range(0,len(self.loop[self.tt])):
-#             if self.loop[self.tt][i]:
-#                 if not self.loop[self.tt-1][i]:
-#                     self.midi_output.send(mido.Message('note_on', note=self.scale[i], velocity=120))
-#             else:
-#                 if self.loop[self.tt-1][i]:
-#                     self.midi_output.send(mido.Message('note_off', note=self.scale[i]))
-
-
-#     def print_head(self):
-#         print( self.loop[self.tt])
-        
-#     def play_at_head(self):
-#         if self.tt == len(self.loop)-1:
-#             self.tt = 0
-#         else:
-#             self.tt+=1
-#         self.midi_messages()
-
-            
-
-
 
 
 def loop_from_dna(sequence):
