@@ -4,8 +4,6 @@ from Bio.Alphabet import IUPAC
 from Bio.Data import CodonTable
 
 
-import numpy as np
-
 import mingus.core.scales as scales
 from mingus.containers import Note, Track, Bar
 from mingus.containers.instrument import Instrument
